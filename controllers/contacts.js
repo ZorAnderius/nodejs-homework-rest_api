@@ -16,6 +16,9 @@ const getContact = async (req, res, next) => {
 };
 
 const addContact = async (req, res, next) => {
+  if (!req.body) {
+    throw HttpError(400, "missing fields");
+  }
   const result = await contacts.addContact(req.body);
   res.status(201).json(result);
 };
