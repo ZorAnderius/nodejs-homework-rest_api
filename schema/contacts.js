@@ -14,6 +14,7 @@ const addSchema = Joi.object({
     .message("The phone number should have the format (123) 123-1234.")
     .required(),
   email: Joi.string().email().required(),
+  favorite: Joi.boolean(),
 });
 
 const updateSchema = Joi.object({
@@ -25,6 +26,15 @@ const updateSchema = Joi.object({
   phone: Joi.string().pattern(/^\(\d{3}\) \d{3}-\d{4}$/),
 
   email: Joi.string().email(),
-}).or("name", "phone", "email");
+  favorite: Joi.boolean(),
+}).or("name", "phone", "email", "favorite");
 
-module.exports = { addSchema, updateSchema };
+const updateFavoriteSchema = Joi.object({
+  favorite: Joi.boolean().required(),
+});
+
+module.exports = {
+  addSchema,
+  updateSchema,
+  updateFavoriteSchema,
+};
