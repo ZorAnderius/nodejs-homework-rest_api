@@ -1,14 +1,14 @@
-const contacts = require("../models/contacts");
+const Contact = require("../models/contact");
 const { HttpError, ctrlWrapper } = require("../helpers");
 
 const getAllContacts = async (req, res, next) => {
-  const result = await contacts.listContacts();
+  const result = await Contact.find();
   res.json(result);
 };
 
 const getContact = async (req, res, next) => {
   const { contactId } = req.params;
-  const result = await contacts.getContactById(contactId);
+  const result = await Contact.findById(contactId);
   if (!result) {
     throw HttpError(404, "Contact not found");
   }
@@ -19,7 +19,7 @@ const addContact = async (req, res, next) => {
   if (!req.body) {
     throw HttpError(400, "missing fields");
   }
-  const result = await contacts.addContact(req.body);
+  const result = await Contact.create(req.body);
   res.status(201).json(result);
 };
 
@@ -28,7 +28,23 @@ const updateContact = async (req, res, next) => {
     throw HttpError(400, "missing fields");
   }
   const { contactId } = req.params;
-  const result = await contacts.updateContact(contactId, req.body);
+  const result = await Contact.findByIdAndUpdate(contactId, req.body, {
+    new: true,
+  });
+  if (!result) {
+    throw HttpError(404, "Not found");
+  }
+  res.json(result);
+};
+
+const updateFavorite = async (req, res, next) => {
+  if (!req.body) {
+    throw HttpError(400, "missing fields");
+  }
+  const { contactId } = req.params;
+  const result = await Contact.findByIdAndUpdate(contactId, req.body, {
+    new: true,
+  });
   if (!result) {
     throw HttpError(404, "Not found");
   }
@@ -37,7 +53,7 @@ const updateContact = async (req, res, next) => {
 
 const deleteContact = async (req, res, next) => {
   const { contactId } = req.params;
-  const result = await contacts.removeContact(contactId);
+  const result = await Contact.findByIdAndRemove(contactId);
   if (!result) {
     throw HttpError(404, "Not Found");
   }
@@ -49,5 +65,6 @@ module.exports = {
   getContact: ctrlWrapper(getContact),
   addContact: ctrlWrapper(addContact),
   updateContact: ctrlWrapper(updateContact),
+  updateFavorite: ctrlWrapper(updateFavorite),
   deleteContact: ctrlWrapper(deleteContact),
 };
